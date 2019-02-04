@@ -6,6 +6,7 @@ Java Swing Based Application (Client) for Twitter Collector
 - [x] Finish Language Table
 - [x] Finish SearchConfig
 - [x] Finish SettingsParser
+- [ ] Finish Long/Lat Input Map
 - [ ] Finish Security Input Checks
 - [ ] Finish encryption class for OAuth
 - [ ] Finish Developer Console
