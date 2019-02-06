@@ -36,19 +36,30 @@ import org.apache.http.util.EntityUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import javax.swing.JToggleButton;
+import javax.swing.JRadioButton;
 
 
 
 public class ClientSide {
+	//Address Variables
 	public static String serviceAddress = "http://localhost:8080/test";
 	public static String postAddress = "http://localhost:8080/post";
+	
+	//Utility Classes Variables
 	private SearchConfig sc;
 	private SettingsParser sp;
+	
+	//Java Swing Variables
 	private JFrame frame;
 	private JTextField longTextField;
 	private JTextField latTextField;
 	private JTextField queryCountTextField;
 	JComboBox languageTableCom = new JComboBox();
+	
+	//State variables
+	private String langState;
+	private JTextField radiusText;
 	/**
 	 * Launch the application.
 	 */
@@ -83,14 +94,15 @@ public class ClientSide {
 		sp.load();
 		frame = new JFrame();
 		frame.setResizable(false);
-		frame.setBounds(100, 100, 284, 300);
+		frame.setBounds(100, 100, 293, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
 		JLabel langLabel = new JLabel("Language: ");
 		langLabel.setBounds(12, 34, 72, 16);
 		frame.getContentPane().add(langLabel);
-
+		//need to add time duration
+		//need tot add types of search: tweet, user...etc
 		//LanguageTable GUI Settings
 		languageTableCom.setMaximumRowCount(35);
 		languageTableCom.setBounds(95, 31, 153, 22);
@@ -116,22 +128,105 @@ public class ClientSide {
 		latTextField.setColumns(10);
 
 		JLabel lblQueryCount = new JLabel("Query Count: ");
-		lblQueryCount.setBounds(12, 121, 80, 16);
+		lblQueryCount.setBounds(12, 152, 80, 16);
 		frame.getContentPane().add(lblQueryCount);
 
 		queryCountTextField = new JTextField();
-		queryCountTextField.setBounds(95, 118, 153, 22);
+		queryCountTextField.setBounds(95, 149, 153, 22);
 		frame.getContentPane().add(queryCountTextField);
 		queryCountTextField.setColumns(10);
 
+		JRadioButton languageState = new JRadioButton("");
+		languageState.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (languageTableCom.isEnabled() == true) {
+					languageTableCom.setEnabled(false);
+					langState = "English";
+				}
+				else {
+					languageTableCom.setEnabled(true);
+					langState = languageTableCom.getSelectedItem().toString();
+					System.out.println(langState);
+				}
+			}
+		});
+		languageState.setBounds(256, 30, 127, 25);
+		frame.getContentPane().add(languageState);
+		
+		JRadioButton locationState = new JRadioButton("");
+		locationState.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (longTextField.isEnabled() == true 
+						&& latTextField.isEnabled() == true 
+						&& radiusText.isEnabled() == true) {
+					longTextField.setEnabled(false);
+					latTextField.setEnabled(false);
+					radiusText.setEnabled(false);
+				}
+				else {
+					longTextField.setEnabled(true);
+					latTextField.setEnabled(true);
+					radiusText.setEnabled(true);
+				}
+			}
+		});
+		locationState.setBounds(256, 59, 127, 25);
+		frame.getContentPane().add(locationState);
+		
+		JLabel radiusLabel = new JLabel("Radius(mi):");
+		radiusLabel.setBounds(12, 123, 80, 16);
+		frame.getContentPane().add(radiusLabel);
+		
+		radiusText = new JTextField();
+		radiusText.setBounds(95, 120, 153, 22);
+		frame.getContentPane().add(radiusText);
+		radiusText.setColumns(10);
+		
 		JButton searchBtn = new JButton("SEARCH");
 		searchBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				//Prepare SearchConfig
-				sc = SearchConfig.getInstance().setLanguage(LanguageTable.langTable.get(languageTableCom.getSelectedItem().toString()))
-						.setLatitude(latTextField.getText())
-						.setLongtitude(longTextField.getText())
-						.setQueryCount(Integer.parseInt(queryCountTextField.getText())); 
+				//Prepare variables
+				//Security Checks
+				String language = "";
+				String lat = "";
+				String longt = "";
+				String radius = "";
+				String qCount = "";
+				if (languageState.isSelected() == true) {
+					language = "English";
+				}
+				else {
+					language = languageTableCom.getSelectedItem().toString();
+				}
+				
+				if (locationState.isSelected() == true) {
+					//Set default value
+					lat = "0";
+					longt = "0";
+					radius = "3959";
+					
+				}
+				else {
+					
+					lat = latTextField.getText();
+					longt = longTextField.getText();
+					radius = radiusText.getText();
+				}
+				
+				if (queryCountTextField.getText().isEmpty()) {
+					qCount = "10";
+				}
+				else {
+					qCount = queryCountTextField.getText();
+				}
+				
+				//Prepare SearchConfig with the appropriate variables
+				sc = SearchConfig.getInstance().setLanguage(LanguageTable.langTable.get(language))
+						.setLatitude(lat)
+						.setLongtitude(longt)
+						.setRadius(radius)
+						.setQueryCount(Integer.parseInt(qCount)); 
+				
 				//Prepare Http client, post, and response variables and settings
 				HttpClient client = new DefaultHttpClient();
 				HttpPost post = new HttpPost(postAddress);
@@ -175,7 +270,9 @@ public class ClientSide {
 				}
 			}
 		});
-		searchBtn.setBounds(151, 153, 97, 25);
+		searchBtn.setBounds(151, 184, 97, 25);
 		frame.getContentPane().add(searchBtn);
+		
+		
 	}
 }
