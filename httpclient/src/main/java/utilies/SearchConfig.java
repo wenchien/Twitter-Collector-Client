@@ -15,6 +15,7 @@ public class SearchConfig {
 	//Location Long/Lat Strings
 	private String latitude;
 	private String longtitude;
+	private String radius;
 	
 	//Language Strings
 	//language are usually in the format of "langtag:language code" 
@@ -98,6 +99,15 @@ public class SearchConfig {
 	}
 	public SearchConfig setQueryCount(int queryCount) {
 		this.queryCount = queryCount;
+		return this;
+	}
+
+	public String getRadius() {
+		return radius;
+	}
+
+	public SearchConfig setRadius(String radius) {
+		this.radius = radius;
 		return this;
 	}
 }
