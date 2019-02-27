@@ -228,7 +228,7 @@ public class ClientSide {
 						.setQueryCount(Integer.parseInt(qCount)); 
 				
 				//Prepare Http client, post, and response variables and settings
-				HttpClient client = new DefaultHttpClient();
+				CloseableHttpClient client = HttpClientBuilder.create().build();
 				HttpPost post = new HttpPost(postAddress);
 				HttpResponse response;
 				HttpGet get = new HttpGet(serviceAddress);
@@ -255,7 +255,7 @@ public class ClientSide {
 					}
 					BufferedReader br = new BufferedReader(
 							new InputStreamReader((response.getEntity().getContent())));
-					client.getConnectionManager().shutdown();
+					client.close();
 
 					
 				} catch (JsonProcessingException | UnsupportedEncodingException e) {
