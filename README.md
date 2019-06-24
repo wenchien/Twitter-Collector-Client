@@ -1,5 +1,6 @@
 # Twitter-Collector-Client
 Java Swing Based Application (Client) for Twitter Collector
+Project Closed due to unforseen circumstance - 6/24/2019
 
 ###### TO-DO LIST
 - [x] Finish ID-Generator (February 4, 2019)
